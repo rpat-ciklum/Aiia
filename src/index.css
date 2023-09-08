@@ -1,0 +1,87 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f6f6f9;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.success-alert {
+  position: fixed;
+  z-index: 9999;
+  right: 65px;
+  top: 80px;
+}
+
+ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  padding-left: 0;
+}
+
+.transaction-item {
+  display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-bottom: 2px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 6px;
+    padding: 6px;
+}
+
+.account-details-section {
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.active .aiia-white {
+  color: #fff;
+}
+
+.account-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.account-details div:nth-child(odd) {
+  font-weight: 600;
+}
+
+.account-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-gap: 10px;
+}
+
+.toacc-amount {
+  display: grid;
+  grid-gap: 10px;
+}
+
+.progress {
+  text-align: center;
+    display: block;
+    height: 200px;
+    padding: 75px;
+}
+
+.accountholder {
+  display: flex;
+    flex-direction: column;
+}
+
+.acc-number {
+  color: #aaa;
+}
+
+.profile-info {
+  right: 10px;
+    position: absolute;
+}
