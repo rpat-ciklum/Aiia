@@ -22,6 +22,7 @@ import { Accounts } from './Accounts';
 import { Transactions } from './Transactions';
 import { Transfer } from './Transfer';
 import { Login } from './Login';
+import AiiaButtonGroup from './AiiaButtonGroup';
 
 const drawerWidth = 240;
 
@@ -39,9 +40,9 @@ export default function ResponsiveDrawer(props: Props) {
     const [activeMenu, setActiveMenu] = React.useState(getDefaultActiveMenu() || "");
     const navigate = useNavigate();
 
-    function getDefaultActiveMenu()  {
+    function getDefaultActiveMenu() {
         let url = window.location.href;
-        if(url.indexOf("?") !== -1) {
+        if (url.indexOf("?") !== -1) {
             url = url.split("?")[0];
         }
         return url.split("/")[3];
@@ -73,22 +74,22 @@ export default function ResponsiveDrawer(props: Props) {
                 {menuItems.map((menuItem, index) => (
                     // <NavLink to={menuItem.href}>
                     <NavLink to={menuItem.href} >
-                         <ListItem key={menuItem.title} disablePadding>
-                         {/* className={menuItem.href === activeMenu ? 'active' : ''} onClick={() => {
+                        <ListItem key={menuItem.title} disablePadding>
+                            {/* className={menuItem.href === activeMenu ? 'active' : ''} onClick={() => {
                         setActiveMenu(menuItem.href);
                         navigate(menuItem.href)
                     }} */}
-                        <ListItemButton>
-                            <ListItemIcon className='aiia-white'>
-                                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                            </ListItemIcon>
-                            <ListItemText primary={menuItem.title} />
-                        </ListItemButton>
+                            <ListItemButton>
+                                <ListItemIcon className='aiia-white'>
+                                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                                </ListItemIcon>
+                                <ListItemText primary={menuItem.title} />
+                            </ListItemButton>
 
 
-                    </ListItem>
+                        </ListItem>
                     </NavLink>
-                   
+
                     //   </NavLink>
                 ))}
             </List>
@@ -100,7 +101,7 @@ export default function ResponsiveDrawer(props: Props) {
     const container = window !== undefined ? () => window.document.body : undefined;
 
     return (
-        <Box sx={{ display: 'flex' }}>
+        <Box sx={{ display: 'flex', width: "60%" }}>
             <CssBaseline />
             <AppBar
                 position="fixed"
@@ -108,11 +109,11 @@ export default function ResponsiveDrawer(props: Props) {
                     boxShadow: "none",
                     background: "#fff",
                     color: "#333",
-                    width: { sm: `calc(100% - ${drawerWidth}px)` },
-                    ml: { sm: `${drawerWidth}px` },
+                    // width: { sm: `calc(100% - ${drawerWidth}px)` },
+                    // ml: { sm: `${drawerWidth}px` },
                 }}
             >
-                <Toolbar>
+                <Toolbar sx={{ boxShadow: "0 8px 6px -10px black" }}>
                     <IconButton
                         color="inherit"
                         aria-label="open drawer"
@@ -122,53 +123,34 @@ export default function ResponsiveDrawer(props: Props) {
                     >
                         <MenuIcon />
                     </IconButton>
-                    <Typography sx={{right: "10px",
-    position: "absolute"}} variant="h6" noWrap component="div">
-                        Hello <span className='aiia-bold'>{accounts[0]?.owner}</span>
+                    <Typography className="header-content" sx={{
+                        right: "10px",
+                        position: "absolute"
+                    }} variant="h6" noWrap component="div">
+                        <div className='displayFlex'>
+                        <div _ngcontent-dwe-c22="" className="header__brand">
+                            <img _ngcontent-dwe-c22="" src="https://cdn.aiia.eu/public/Images/aiia_logo.svg" alt="Aiia" className="header__brand__logo" />
+                        </div>
+                        <AiiaButtonGroup></AiiaButtonGroup>
+                        </div>
+                                               
+                        
+                        <div>
+                            Hello <span className='aiia-bold'>{accounts[0]?.owner}</span>
+                        </div>
+
                     </Typography>
                 </Toolbar>
             </AppBar>
             <Box
-                component="nav"
-                sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-                aria-label="mailbox folders"
-            >
-                {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-                <Drawer
-                    container={container}
-                    variant="temporary"
-                    open={mobileOpen}
-                    onClose={handleDrawerToggle}
-                    ModalProps={{
-                        keepMounted: true, // Better open performance on mobile.
-                    }}
-                    sx={{
-                        display: { xs: 'block', sm: 'none' },
-                        '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-                    }}
-                >
-                    {drawer}
-                </Drawer>
-                <Drawer
-                    variant="permanent"
-                    sx={{
-                        display: { xs: 'none', sm: 'block' },
-                        '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-                    }}
-                    open
-                >
-                    {drawer}
-                </Drawer>
-            </Box>
-            <Box
                 component="main"
-                sx={{ marginTop: "36px", flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
+                sx={{ marginTop: "50px", marginLeft: "25px", flexGrow: 1, p: 3 }}
             >
-            
+
 
 
                 <Routes>
-                {/* <Route path="/" element={<Login />} /> */}
+                    {/* <Route path="/" element={<Login />} /> */}
                     <Route path="/accounts" element={<Accounts accounts={accounts} />} />
                     <Route path="/transactions" element={<Transactions accounts={accounts} />} />
                     <Route path="/transfer" element={<Transfer accounts={accounts} />} />

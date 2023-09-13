@@ -65,6 +65,10 @@
   padding: 0 10px;
 }
 
+.tamount .balance {
+  color: #aaa;
+}
+
 .transfer-button {
   width: 150px;
   background: #1976d2;
@@ -81,13 +85,17 @@
   /* margin-top: 20px; */
 }
 
-.account-container.active {
+.account-container.active  {
   background-color: #1976d2;
   color: #fff;
 }
 
 .active {
   background-color: #1976d2;
+  color: #fff;
+}
+
+.active button {
   color: #fff;
 }
 
@@ -98,8 +106,19 @@
   font-weight: 600;
 }
 
+.transaction-box {
+  box-shadow: -6px -6px 9px -6px black;
+}
+
 .acc-transaction-section li {
   background-color: #eee;
+  padding: 6px 10px;
+}
+
+.noof-transactions {
+  display: flex;
+  justify-content: end;
+  margin-top: 20px;
 }
 
 
@@ -125,10 +144,18 @@
 
 .acc-details-actions {
   background-color: #ddd;
+  height: 36px;
 }
 
 .acc-details-actions Button:nth-child(even) {
-  margin-left: 48px;
+  margin-left: 185px;
+  
+}
+
+.transaction-form {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
 }
 
 .actions {
@@ -137,6 +164,17 @@
     cursor: pointer;
     text-align: center;
     justify-content: center;
+}
+
+.displayFlex {
+  display: flex;
+}
+
+.consent__body__row {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
 .btn-makepayment {
@@ -250,4 +288,28 @@
   display: flex;
   justify-content: center;
   margin-top: 40px;
+}
+
+.error{
+  color: red;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+button[type="submit"] {
+  background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+}
+
+.header-content {
+  display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 50px;
 }

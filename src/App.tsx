@@ -15,11 +15,12 @@ import AlertTitle from '@mui/material/AlertTitle';
 import { user } from './user';
 import ProgressSpinner from './Progress';
 import { Login } from './Login';
+import AiiaButtonGroup from './AiiaButtonGroup';
 
 function App() {
 
   const [accounts, setAccounts]: any = useState([]);
-  
+
   const [selectedAccount, setSelectedAccount] = useState();
 
   const [transferAmount, setTransferAmount] = useState();
@@ -31,6 +32,8 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
 
   const navigate = useNavigate();
+
+  const timeoutTime = 5000;
 
 
   const getAccounts = async () => {
@@ -61,7 +64,7 @@ function App() {
       setMessage("User Logged in Successfully");
       setTimeout(() => {
         setMessage("");
-      }, 2500);
+      }, timeoutTime);
       getAccounts();
       setInprogress(false);
       setIsLoggedIn(true);
@@ -69,14 +72,35 @@ function App() {
     })
   }
 
+  const getAuthorizationPaymentStatus = (authorizationId: any) => {
+    const accountID = localStorage.getItem("accountID");
+    reqInstance.get(`authorizationpaymentstatus?accountID=${accountID}&authorizationID=${authorizationId}`).then((res) => {
+      console.log(res.data);
+      if(res.data.status.code === "Approved") {
+        setMessage("Transaction Succeeded");
+      setTimeout(() => {
+        setMessage("");
+      }, timeoutTime);
+      }else if(res.data.status.code === "Failed") {
+        setMessage(`Transaction Failed: ${res.data.status.details.errorType}`);
+        setTimeout(() => {
+          setMessage("");
+        }, timeoutTime);
+      }
+    })
+  }
+
   useEffect(() => {
     let url = window.location.href;
 
     if (url.indexOf("authorizationId") !== -1) {
-      setMessage("Transaction Succeeded");
-      setTimeout(() => {
-        setMessage("");
-      }, 2500);
+      
+      const params: any = new URLSearchParams(url.split("?")[1]).entries();
+      let codeObj: any = {};
+      for (let param of params) {
+        codeObj[param[0]] = param[1];
+      }
+      getAuthorizationPaymentStatus(codeObj.authorizationId);
     } else if (url.indexOf("code") !== -1) {
       const params: any = new URLSearchParams(url.split("?")[1]).entries();
       let codeObj: any = {};
@@ -92,11 +116,11 @@ function App() {
       user.data = userData;
       getAccounts();
       setIsLoggedIn(true)
-      if(!window.location.href.split("/")[3]) {
+      if (!window.location.href.split("/")[3]) {
         navigate("/accounts");
       }
-     
-    }else {
+
+    } else {
       setIsLoggedIn(false)
     }
 
@@ -104,19 +128,20 @@ function App() {
 
   return (
     <div className="App">
-      {message && <Alert className='success-alert' severity="success">
-        <AlertTitle>Success</AlertTitle>
+      {/* <AiiaButtonGroup></AiiaButtonGroup> */}
+      {message && <Alert className='success-alert' severity={message.indexOf('Failed') !== -1 ? 'error' : 'success'}>
+        <AlertTitle>{message.indexOf('Failed') !== -1 ? "Failure" : "Success"}</AlertTitle>
         {message}
       </Alert>}
 
       {
         (!inprogress && !isLoggedIn) && <Login />
       }
-     
+
       {(isLoggedIn) ? <ResponsiveDrawer accounts={accounts}></ResponsiveDrawer> : ""}
       {
-                inprogress && (<ProgressSpinner></ProgressSpinner>)
-            }
+        inprogress && (<ProgressSpinner></ProgressSpinner>)
+      }
 
     </div>
   );

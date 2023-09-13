@@ -44,58 +44,45 @@ export const Transfer = (props: any) => {
 
     const accountId: any = queryParams.get("id") || "";
 
-    
+
 
 
     useEffect(() => {
-        if(accountId) {
+        if (accountId) {
             setFromAccount(accountId);
         }
-        
+
     }, [])
 
-
-    const onToAccountChange = (event: any) => {
-        const toAccount = accounts.find((account: any) => {
-            return account.id === event.target.value;
+    const getAccountByBban = (bban: any) => {
+        return accounts.find((account: any) => {
+            return account.number.bban === bban;
         });
-        setToAccount(toAccount);
     }
 
-    const onFromAccountChange = (event: any) => {
-        setFromAccount(event.target.value);
+    const onToAccountChange = (bban: any) => {
+        // const toAccount = getAccountByBban(bban);
+        setToAccount(bban);
     }
 
-    const onAmountChange = (event: any) => {
-        setTransferAmount(event.target.value);
+
+
+    const onFromAccountChange = (fromAccuont: any) => {
+        setFromAccount(fromAccuont);
     }
 
-    const onRemarksChange = (event: any) => {
-        setRemarks(event.target.value);
+    const onAmountChange = (amount: any) => {
+        setTransferAmount(amount);
     }
 
-    
+    const onRemarksChange = (remarks: any) => {
+        setRemarks(remarks);
+    }
 
-    const transferMoney = () => {
-        const requestBody = {
-            "payment": {
-                "amount": {
-                    "value": transferAmount,
-                    "currency": "DKK"
-                },
-                "destination": {
-                    "bban": toAccount.number.bbanParsed,
-                    "name": toAccount.name
-                },
-                //        "execution": {
-                //            "type":"SpecificDate",
-                //            "date": "2021-07-23"
-                //        },
-                "message": "Invoice: 2",
-                "transactionText": "Invoice: 2"
-            },
-            "redirectUrl": "http://localhost:3000/accounts"
-        };
+
+
+    const transferMoney = (requestBody: any) => {
+
         setInprogress(true);
         reqInstance.post(`makepayment?accountID=${fromAccount}`, requestBody).then((res: any) => {
             console.log(res);
@@ -113,109 +100,177 @@ export const Transfer = (props: any) => {
         reqInstance.post(`authorizepayment?accountID=${fromAccount}`, requestBody).then(res => {
             console.log(res);
             setInprogress(false);
-            localStorage.setItem("authorizationId", res.data.authorizationId)
+            localStorage.setItem("authorizationId", res.data.authorizationId);
+            localStorage.setItem("accountID", fromAccount);
             window.location.href = res.data.authorizationUrl;
         })
     }
 
     const paymentSchema = Yup.object().shape({
         fromAccount: Yup.string()
-     
-        
+
+
             // Required Field Validation
-            .required("From Account should not be empty"),
+            .required("Please select From Account"),
         toAccount: Yup.string()
-     
-            .required("To Account should not be empty"),
-            amount: Yup.string()
-     
+
+            .required("Please enter Beneficiary Account"),
+        bankCode: Yup.string()
+            .required("Please enter Bank Code"),
+        amount: Yup.number()
+            .moreThan(0, 'Amount should be greater than zero')
+
             // Format Validation
-            
-     
+
+
             // Required Field Validation
-            .required("Amount Should not be empty"),
+            .required("Please enter Amount"),
         remarks: Yup.string()
 
     });
 
     const card = (
         <React.Fragment>
-            <CardContent>
-            <Formik initialValues={{ fromAccount: "", toAccount: "", amount: "", remarks: "" }} 
-            validationSchema={paymentSchema}
-            onSubmit={(values) => {
-                console.log(values)
-                alert("Form is validated and in this block api call should be made...");
-              }
-            }
+            <Formik initialValues={{ fromAccount: accountId || "", toAccount: "", bankCode: "", amount: "", remarks: "" }}
+                validationSchema={paymentSchema}
+                onSubmit={(values) => {
+                    console.log(values)
+                    onToAccountChange(values.toAccount);
+                    onAmountChange(values.amount);
+                    onFromAccountChange(values.fromAccount);
+                    onRemarksChange(values.remarks);
+                    // const toAccountDetails = getAccountByBban(values.toAccount);
+
+                    const requestBody = {
+                        "payment": {
+                            "amount": {
+                                "value": values.amount,
+                                "currency": "DKK"
+                            },
+                            "destination": {
+                                "bban": { accountNumber: values.toAccount, bankCode: values.bankCode },
+                                "name": "name" || "toAccountDetails.name"
+                            },
+                            //        "execution": {
+                            //            "type":"SpecificDate",
+                            //            "date": "2021-07-23"
+                            //        },
+                            "message": "Invoice: 2",
+                            "transactionText": values.remarks
+                        },
+                        "redirectUrl": "http://localhost:3000/accounts"
+                    };
+
+                    transferMoney(requestBody);
+                }
+                }
+                validateOnChange={true}
+                validateOnBlur={true}
             >
 
-{ (props) => (
-    <div className="account-form">
-    <div>
+                {(props) => (
+                    <>
+                        <Form noValidate>
+                            <CardContent>
+
+                               {accounts.length > 0 &&  <div className="account-form">
+                                    <div>
 
 
-        <FormControl size="small" sx={{ minWidth: 300 }} >
-            <InputLabel id="demo-simple-select-label">From Account</InputLabel>
-            <Select
+                                        <FormControl required variant="standard" size="small" sx={{ minWidth: 200 }} >
+                                            <InputLabel id="demo-simple-select-label">From Account</InputLabel>
+                                            <Field required name="fromAccount" onChange={onFromAccountChange} render={({ field, form: { touched, errors } }: any) => (<><Select
+                                                {...field}
+                                                required
+                                                onChange={(e) => {
+                                                    props.setFieldValue("fromAccount", e.target.value);
+                                                    setFromAccount(e.target.value)
+                                                }}
+                                                labelId="demo-simple-select-label"
+                                                id="demo-simple-select"
+                                                value={fromAccount}
+                                                label="From Account"
 
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={fromAccount}
-                label="From Account"
-                onChange={onFromAccountChange}
-            >
-                ({
-                    accounts.map((account: any) => {
-                        return <MenuItem value={account.id}>
-                            <div className="accountholder">
-                                <span className="owner">{account.owner}</span>
-                                <span className="acc-number">{account.number.bbanParsed.accountNumber}</span>
-                            </div>
-
-
-                        </MenuItem>
-                    })
-                })
-
-            </Select>
-        </FormControl>
-    </div>
-        <div>
-            <Box>
-                <TextField size="small" onChange={onToAccountChange} id="outlined-basic" label="To Account" variant="outlined" />
-            </Box>
+                                            >
+                                                ({
+                                                    accounts.map((account: any) => {
+                                                        return <MenuItem value={account.id}>
+                                                            <div className="accountholder">
+                                                                <span className="owner">{account.owner}</span>
+                                                                <span className="acc-number">{account.number.bbanParsed.accountNumber}</span>
+                                                            </div>
 
 
-        </div>
-        <div>
+                                                        </MenuItem>
+                                                    })
+                                                })
 
-            <TextField size="small" onChange={onAmountChange} id="outlined-basic" label="Amount" variant="outlined" />
-        </div>
-        <div>
+                                            </Select>
+                                                {touched[field.name] &&
+                                                    errors[field.name] && <div className="error">{errors[field.name]}</div>}
+                                            </>
+                                            )} />
 
-<TextField size="small" onChange={onRemarksChange} id="outlined-basic" label="Remarks" variant="outlined" />
-</div>
-</div>
-)}
-           
-                
+                                        </FormControl>
+                                    </div>
+                                    <div>
+                                        <Box>
+                                            <Field  name="toAccount" onChange={(e: any) => {
+                                                onToAccountChange(e.target.value);
+                                            }} render={({ field, form: { touched, errors } }: any) => (<><TextField required variant="standard" {...field} size="small" id="outlined-basic" label="Beneficiary Account"  />
+                                                {touched[field.name] &&
+                                                    errors[field.name] && <div className="error">{errors[field.name]}</div>}
+                                            </>
+                                            )} />
 
-                </Formik>
-            </CardContent>
-            <CardActions className="actions">
-                <Stack spacing={20} direction="row">
+                                        </Box>
 
-                    <div className="btn-makepayment" onClick={transferMoney} >Confirm</div>
-                </Stack>
-            </CardActions>
+
+                                    </div>
+                                    <div>
+
+                                        <Field name="bankCode" onChange={onRemarksChange} render={({ field, form: { touched, errors } }: any) => (<><TextField required variant="standard" {...field} size="small" id="outlined-basic" label="Bank Code"  />
+                                            {touched[field.name] &&
+                                                errors[field.name] && <div className="error">{errors[field.name]}</div>}
+                                        </>
+                                        )} />
+                                    </div>
+                                    <div>
+                                        <Field name="amount" onChange={onAmountChange} render={({ field, form: { touched, errors } }: any) => (<><TextField required variant="standard" {...field} size="small" id="outlined-basic" label="Amount"  />
+                                            {touched[field.name] &&
+                                                errors[field.name] && <div className="error">{errors[field.name]}</div>}
+                                        </>
+                                        )} />
+
+                                    </div>
+                                    <div>
+
+                                        <Field name="remarks" onChange={onRemarksChange} render={({ field, form: { touched, errors } }: any) => (<><TextField variant="standard" {...field} size="small" id="outlined-basic" label="Remarks"  />
+                                            {touched[field.name] &&
+                                                errors[field.name] && <div className="error">{errors[field.name]}</div>}
+                                        </>
+                                        )} />
+                                    </div>
+
+                                </div>}
+                            </CardContent>
+                            <CardActions className="actions">
+                                <Stack spacing={20} sx={{ width: "100%" }} direction="row">
+
+                                    <div className="btn-makepayment"  ><button type="submit" >Confirm</button></div>
+                                </Stack>
+                            </CardActions>
+                        </Form>
+                    </>
+                )}
+            </Formik>
         </React.Fragment>
     );
 
     return (
         <div className='transfer-section'>
             <div className='aiia-bold'>Make a Payment: </div>
-            <OutlinedCard card={card}></OutlinedCard>
+            <OutlinedCard className="transaction-box" sx={{"box-shadow": "-6px -6px 9px -6px black"}} card={card}></OutlinedCard>
 
             <BackButton></BackButton>
 
