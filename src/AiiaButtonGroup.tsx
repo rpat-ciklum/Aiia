@@ -23,7 +23,11 @@ export default function AiiaButtonGroup() {
         {
             href: 'transfer',
             title: 'Make a Payment',
-        }
+        },
+        {
+          href: 'acceptpayments',
+          title: 'Accept Payments',
+      }
     ];
   return (
     <Box

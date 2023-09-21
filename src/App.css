@@ -313,3 +313,13 @@ button[type="submit"] {
     justify-content: space-between;
     padding: 0 50px;
 }
+
+.accept-payments-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-top: 40px;
+  background-color: #fff;
+  padding: 20px;
+  row-gap: 8px;
+}

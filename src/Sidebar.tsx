@@ -23,6 +23,7 @@ import { Transactions } from './Transactions';
 import { Transfer } from './Transfer';
 import { Login } from './Login';
 import AiiaButtonGroup from './AiiaButtonGroup';
+import { AcceptPayments } from './AcceptPayments';
 
 const drawerWidth = 240;
 
@@ -154,6 +155,7 @@ export default function ResponsiveDrawer(props: Props) {
                     <Route path="/accounts" element={<Accounts accounts={accounts} />} />
                     <Route path="/transactions" element={<Transactions accounts={accounts} />} />
                     <Route path="/transfer" element={<Transfer accounts={accounts} />} />
+                    <Route path='/acceptpayments' element={<AcceptPayments accounts={accounts} />} />
                 </Routes>
 
             </Box>
